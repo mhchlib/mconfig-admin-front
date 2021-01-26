@@ -22,6 +22,10 @@ const router = new Router({
     layout('Default', [
       route('Dashboard'),
       route('App', null, '/app'),
+      route('Env', null, '/app/env'),
+      route('Configs', null, '/app/configs'),
+      route('Config', null, '/app/config'),
+      route('Intro', null, '/intro'),
       route('Message', null, '/msg'),
       route('Logs', null, '/logs'),
       route('Profile', null, '/profile'),

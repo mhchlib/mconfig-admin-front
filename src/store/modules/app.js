@@ -17,6 +17,11 @@ const state = {
       to: '/app',
     },
     {
+      title: '操作介绍',
+      icon: 'mdi-format-line-style',
+      to: '/intro',
+    },
+    {
       title: '操作日志',
       icon: 'mdi-chart-bubble',
       to: '/logs',

@@ -2,7 +2,7 @@
   <v-data-table :headers="headers" :items="applist" sort-by="create_time" class="elevation-1">
     <template v-slot:top>
       <v-toolbar flat>
-        <v-toolbar-title>应用</v-toolbar-title>
+        <v-toolbar-title>环境</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
@@ -11,7 +11,7 @@
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-              新建应用
+              新建环境
             </v-btn>
           </template>
           <v-card>
@@ -21,13 +21,10 @@
             <v-card-text>
               <v-container>
                 <v-row cols="12" sm="6" md="4">
-                  <v-text-field v-model="editedItem.name" label="应用名称"></v-text-field>
+                  <v-text-field v-model="editedItem.name" label="环境名称"></v-text-field>
                 </v-row>
                 <v-row cols="12" sm="6" md="4">
-                  <v-text-field v-model="editedItem.desc" label="应用描述"></v-text-field>
-                </v-row>
-                <v-row cols="12" sm="6" md="4">
-                  <v-text-field v-model="editedItem.key" label="应用密钥"></v-text-field>
+                  <v-text-field v-model="editedItem.desc" label="环境描述"></v-text-field>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -44,7 +41,7 @@
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
-            <v-card-title class="headline">确定删除该应用吗?</v-card-title>
+            <v-card-title class="headline">确定删除该环境吗?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="closeDelete">取消</v-btn>
@@ -56,7 +53,7 @@
       </v-toolbar>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon small class="mr-2" color="purple" @click="detailItem(item)" >
+      <v-icon small class="mr-2" color="purple" @click="detailItem(item)">
         mdi-wrench
       </v-icon>
       </v-btn>
@@ -80,8 +77,8 @@ export default {
     dialog: false,
     dialogDelete: false,
     headers: [
-      { text: '应用名称', align: 'start', sortable: false, value: 'name', },
-      { text: '应用描述', value: 'desc', sortable: false, },
+      { text: '环境名称', value: 'name', sortable: false, },
+      { text: '环境描述', value: 'desc', sortable: false, },
       { text: '创建时间', value: 'create_time' },
       { text: '更新时间', value: 'update_time' },
       { text: '操作', value: 'actions', sortable: false },
@@ -91,18 +88,16 @@ export default {
     editedItem: {
       name: '',
       desc: '',
-      key: 0,
     },
     defaultItem: {
       name: '',
       desc: '',
-      key: 0,
     },
   }),
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? '新建应用' : '编辑应用'
+      return this.editedIndex === -1 ? '新建环境' : '编辑环境'
     },
   },
 
@@ -126,75 +121,75 @@ export default {
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 4.0,
+
         },
         {
           name: 'Ice cream sandwich',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 4.3,
+
         },
         {
           name: 'Eclair',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 6.0,
+
         },
         {
           name: 'Cupcake',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 4.3,
+
         },
         {
           name: 'Gingerbread',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 3.9,
+
         },
         {
           name: 'Jelly bean',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 0.0,
+
         },
         {
           name: 'Lollipop',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 0,
+
         },
         {
           name: 'Honeycomb',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 6.5,
+
         },
         {
           name: 'Donut',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 4.9,
+
         },
         {
           name: 'KitKat',
           desc: "我是一个描述信息",
           create_time: "2021-01-01 12:12",
           update_time: "2021-02-04 1:19",
-          protein: 7,
+
         },
       ]
     },
-    detailItem(item){
-        this.$router.push({ path:'/app/env'  })
+    detailItem(item) {
+      this.$router.push({ path: '/app/configs' })
     },
     editItem(item) {
       this.editedIndex = this.applist.indexOf(item)
