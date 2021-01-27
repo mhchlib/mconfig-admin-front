@@ -13,8 +13,18 @@ const state = {
     },
     {
       title: '应用管理',
-      icon: 'mdi-clipboard-outline',
+      icon: 'mdi-wall',
       to: '/app',
+    },
+     {
+      title: '实时概况',
+      icon: 'mdi-midi-port',
+      to: '/status',
+    },
+    {
+      title: '集群管理',
+      icon: 'mdi-vector-difference',
+      to: '/clusters',
     },
     {
       title: '操作介绍',

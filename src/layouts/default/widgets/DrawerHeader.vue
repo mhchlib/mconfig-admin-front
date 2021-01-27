@@ -8,10 +8,10 @@
     </v-list-item-avatar>
 
     <v-list-item-content class="pl-2">
-      <v-list-item-title class="text-h3">
-        <strong class="mr-1 font-weight-black">VMD</strong>
+      <v-list-item-title class="text-h4">
+        <strong class="mr-1 font-weight-black">MCONFIG</strong>
 
-        <span class="primary--text">FREE</span>
+        <span class="primary--text">ADMIN</span>
       </v-list-item-title>
     </v-list-item-content>
   </v-list-item>

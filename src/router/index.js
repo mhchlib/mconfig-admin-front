@@ -25,6 +25,8 @@ const router = new Router({
       route('Env', null, '/app/env'),
       route('Configs', null, '/app/configs'),
       route('Config', null, '/app/config'),
+      route('Status', null, '/status'),
+      route('Clusters', null, '/clusters'),
       route('Intro', null, '/intro'),
       route('Message', null, '/msg'),
       route('Logs', null, '/logs'),

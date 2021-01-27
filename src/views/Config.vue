@@ -25,20 +25,22 @@
             <v-toolbar-title> 历史存档</v-toolbar-title>
           </v-toolbar>
           <v-card style="width: 90%;margin-left: 5%;margin-top: 5px;">
-            <v-tabs dark background-color="teal primary" show-arrows>
+            <v-tabs dark background-color="teal primary" show-arrows v-model="tab">
               <v-tabs-slider color="teal lighten-3"></v-tabs-slider>
-              <v-tab v-for="i in 2" :key="i" :href="'#tab-' + i">
-                Item {{ i }}
+              <v-tab v-for="(o,i) in achieves" :key="i" :href="'#' + i">
+                {{ i }}
               </v-tab>
             </v-tabs>
-  
           </v-card>
+          <v-snackbar :timeout="-1" :value="true" left shaped color="primary">
+            {{achieves[tab].desc}}
+          </v-snackbar>
           <div class="achieve">
             <div>
-              <v-jsoneditor v-model="json" :options="options" :plus="true" height="600px" @error="onError" />
+              <v-jsoneditor v-model="achieves[tab].config" :options="options" :plus="true" height="600px" @error="onError" />
             </div>
             <div>
-              <v-jsoneditor v-model="json" :options="options" :plus="true" height="600px" @error="onError" />
+              <v-jsoneditor v-model="achieves[tab].schema" :options="options" :plus="true" height="600px" @error="onError" />
             </div>
           </div>
         </v-card>
@@ -55,6 +57,7 @@ export default {
   },
   data() {
     return {
+      tab: "current",
       json: {
         "hello": "vue",
         "hello1": "vue"
@@ -62,10 +65,19 @@ export default {
       options: {
         mode: "code"
       },
-      dialog: true,
+      dialog: false,
       notifications: false,
       sound: true,
-      widgets: false
+      widgets: false,
+      achieves: {
+        "current": { desc: "dsada", config: "{}", schema: "{}" },
+        "v1.12": { desc: "dsadadsadadsadadsada", config: "{}", schema: "{}" },
+        "v1.08": { desc: "dsadadsada", config: "{}", schema: "{}" },
+        "v1.7": { desc: "dsada", config: "{}", schema: "{}" },
+        "v1.4": { desc: "dsada", config: "{}", schema: "{}" },
+        "v0.7": { desc: "dsada", config: "{}", schema: "{}" },
+        "v0.2": { desc: "dsadadsadadsadadsada", config: "{}", schema: "{}" },
+      }
     }
   },
   methods: {
@@ -84,7 +96,7 @@ export default {
   justify-content: space-around;
 }
 
-.achieve{
+.achieve {
   width: 90%;
   margin-top: 30px;
   margin-left: 5%;
@@ -97,5 +109,8 @@ export default {
   height: 600px;
   background-color: currentColor;
 }
+
+
+.achieve input {}
 
 </style>
