@@ -1,5 +1,5 @@
 {
-  "name": "mconfig admin",
+  "name": "mconfig-admin",
   "version": "1.2.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
     "postversion": "node scripts/postversion.js"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "v-jsoneditor": "^1.4.2",
     "vue": "^2.6.11",
     "vue-meta": "^2.3.3",

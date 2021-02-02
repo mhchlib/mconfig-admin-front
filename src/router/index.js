@@ -22,7 +22,7 @@ const router = new Router({
     layout('Default', [
       route('Dashboard'),
       route('App', null, '/app'),
-      route('Env', null, '/app/env'),
+      route('Env', null, '/app/env/:app'),
       route('Configs', null, '/app/configs'),
       route('Config', null, '/app/config'),
       route('Status', null, '/status'),
