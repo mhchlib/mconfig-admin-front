@@ -23,7 +23,7 @@ const router = new Router({
       route('Dashboard'),
       route('App', null, '/app'),
       route('Env', null, '/app/env/:app'),
-      route('Configs', null, '/app/configs'),
+      route('Configs', null, '/app/configs/:app/:env'),
       route('Config', null, '/app/config'),
       route('Status', null, '/status'),
       route('Clusters', null, '/clusters'),

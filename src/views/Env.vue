@@ -68,9 +68,9 @@
         </v-toolbar>
       </template>
       <template v-slot:item.name="{ item }">
-        <router-link :to="{path:'/app/env', query:{app_id:item.id}}">
-          {{ item.name }}
-        </router-link>
+       <router-link  :to="{path:'/app/configs/'+app_id+'/'+item.id}">
+        {{ item.name }}
+      </router-link>
       </template>
       <template v-slot:item.filter="{ item }">
         <v-btn color="primary" @click="showFilter(item)">
@@ -258,7 +258,7 @@ export default {
         //编辑
         // Object.assign(this.envlist[this.editedIndex], this.editedItem)
         var _this = this
-        axios.put('/api/v1/env/env/' + _this.envlist[_this.editedIndex].id, { 
+        axios.put('/api/v1/env/base/' + _this.envlist[_this.editedIndex].id, { 
           name: _this.editedItem.name,
           desc: _this.editedItem.desc,
         }).then(function(res) {
@@ -310,6 +310,7 @@ export default {
       this.filterId = item.filter
       this.currentId = item.id
       this.showFilterDialog = true
+      this.filterCode=""
       
       if (this.filterId != -1) {
         var _this = this

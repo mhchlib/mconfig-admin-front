@@ -1,12 +1,12 @@
 <template>
-  <v-data-table :headers="headers" :items="applist" sort-by="update_time" class="elevation-1">
+  <v-data-table :headers="headers" :items="clusterlist" class="elevation-1" :options.sync="options" :loading="loading">
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>集群</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
-        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+        <v-text-field v-model="search" clusterend-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
@@ -21,17 +21,13 @@
             <v-card-text>
               <v-container>
                 <v-row cols="12" sm="6" md="4">
-                  <v-text-field v-model="editedItem.name" label="集群名称"></v-text-field>
+                  <v-text-field v-model="editedItem.namespace" label="命名空间"></v-text-field>
+                </v-row>
+                      <v-row cols="12" sm="6" md="4">
+                  <v-text-field v-model="editedItem.register" label="注册中心"></v-text-field>
                 </v-row>
                 <v-row cols="12" sm="6" md="4">
                   <v-text-field v-model="editedItem.desc" label="集群描述"></v-text-field>
-                </v-row>
-                 <v-row cols="12" sm="6" md="4">
-                  <v-text-field v-model="editedItem.namespace" label="命名空间"></v-text-field>
-                </v-row>
-
-                <v-row cols="12" sm="6" md="4">
-                  <v-text-field v-model="editedItem.register" label="注册中心"></v-text-field>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -41,7 +37,7 @@
                 取消
               </v-btn>
               <v-btn color="blue darken-1" text @click="save">
-                保存
+                确定
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -59,8 +55,12 @@
         </v-dialog>
       </v-toolbar>
     </template>
+    <template v-slot:item.name="{ item }">
+      <router-link :to="{path:'/cluster/env/'+item.id}">
+        {{ item.name }}
+      </router-link>
+    </template>
     <template v-slot:item.actions="{ item }">
-      </v-btn>
       <v-icon small class="mr-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
@@ -76,33 +76,40 @@
   </v-data-table>
 </template>
 <script>
+import axios from "axios"
+
 export default {
   data: () => ({
+    total: 0,
+    loading: true,
+    options: {},
+    search: '',
     dialog: false,
     dialogDelete: false,
     headers: [
-      { text: '集群名称', align: 'start', sortable: false, value: 'name', },
-      { text: '集群描述', value: 'desc', sortable: false, },
-      { text: '命名空间', value: 'namespace', sortable: false, },
-      { text: '注册中心', value: 'registers', sortable: false, },
-      { text: '创建时间', value: 'create_time',sortable: true, },
-      { text: '更新时间', value: 'update_time',sortable: true, },
+      { text: '命名空间', value: 'namespace', },
+      { text: '描述', value: 'desc', sortable: false, },
+      { text: '注册中心', value: 'desc', sortable: false, },
+      { text: '创建时间', value: 'create_time' },
+      { text: '更新时间', value: 'update_time' },
       { text: '操作', value: 'actions', sortable: false },
     ],
-    applist: [],
+    clusterlist: [],
     editedIndex: -1,
     editedItem: {
-      name: '',
+      namespace: '',
       desc: '',
-      registers: '',
+      register: '',
     },
     defaultItem: {
-      name: '',
+      namespace: '',
       desc: '',
-      registers: '',
+      register: '',
     },
   }),
+  filters: {
 
+  },
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? '新建集群' : '编辑集群'
@@ -116,50 +123,85 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete()
     },
+    options: {
+      handler() {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
+    search: {
+      handler() {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
   },
 
   created() {
-    this.initialize()
+    // this.initialize()
   },
 
   methods: {
     initialize() {
-      this.applist = [{
-          name: '测试集群的dev',
-          desc: "",
-          namespace:"com.github.mhchlib.",
-          create_time: "2021-01-01 12:12",
-          update_time: "2021-01-13 1:19",
-          registers: 'etcd://127.0.0.1:2379/mconfig'
-        },
-        {
-          name: '正式环境pro',
-          desc: "",
-           namespace:"com.github.mhchlib.",
-          create_time: "2021-01-13 12:12",
-          update_time: "2021-01-20 1:19",
-          registers: 'etcd://10.20.110.25:2379/mconfig'
+      this.options.itemsPerPage = 10
+      this.options.page = 0
+      this.getDataFromApi()
+    },
+    getDataFromApi() {
+      this.loading = true
+      var _this = this
+      axios.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
+        params: {
+          limit: _this.options.itemsPerPage,
+          offset: (_this.options.itemsPerPage) * (_this.options.page - 1),
+          filter: _this.search,
         }
-      ]
+      }).then(function(res) {
+        console.log(res.data.data)
+        var list = res.data.data
+        for (var i = 0; i < list.length; i++) {
+          list[i]['create_time'] = _this.formatDate(list[i]['create_time'] * 1000)
+          list[i]['update_time'] = _this.formatDate(list[i]['update_time'] * 1000)
+        }
+
+        _this.total = 10
+        _this.loading = false
+        _this.clusterlist = res.data.data
+      }).catch(function(error) {
+        console.log(error);
+      });
+
     },
     detailItem(item) {
-      this.$router.push({ path: '/app/env' })
+      this.$router.push({ path: '/cluster/env' })
     },
     editItem(item) {
-      this.editedIndex = this.applist.indexOf(item)
+      this.editedIndex = this.clusterlist.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
     },
 
     deleteItem(item) {
-      this.editedIndex = this.applist.indexOf(item)
+      this.editedIndex = this.clusterlist.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
 
     deleteItemConfirm() {
-      this.applist.splice(this.editedIndex, 1)
+      // this.clusterlist.splice(this.editedIndex, 1)
       this.closeDelete()
+      var _this = this
+      axios.delete('/api/v1/cluster/' + _this.clusterlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
+        params: {
+
+        }
+      }).then(function(res) {
+        _this.getDataFromApi()
+      }).catch(function(error) {
+        console.log(error);
+        alert(error.data.msg)
+      });
+
     },
 
     close() {
@@ -180,12 +222,58 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.applist[this.editedIndex], this.editedItem)
+        //编辑
+        // Object.assign(this.clusterlist[this.editedIndex], this.editedItem)
+        var _this = this
+        axios.put('/api/v1/cluster/' + _this.clusterlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
+          namespace: _this.editedItem.namespace,
+          register: _this.editedItem.register,
+          desc: _this.editedItem.desc,
+        }).then(function(res) {
+          _this.getDataFromApi()
+        }).catch(function(error) {
+          console.log(error);
+          alert(error.data.msg)
+        });
+
       } else {
-        this.applist.push(this.editedItem)
+        //新建
+        var _this = this
+        axios.post('/api/v1/cluster/', { // 还可以直接把参数拼接在url后边
+          namespace: _this.editedItem.namespace,
+          register: _this.editedItem.register,
+          desc: _this.editedItem.desc,
+        }).then(function(res) {
+          console.log(res.data.data)
+          _this.getDataFromApi()
+
+        }).catch(function(error) {
+          console.log(error);
+        });
+
+
+        // this.clusterlist.push(this.editedItem)
       }
       this.close()
     },
+
+    formatDate(value) {
+      let date = new Date(value);
+      let y = date.getFullYear();
+      let MM = date.getMonth() + 1;
+      MM = MM < 10 ? ('0' + MM) : MM;
+      let d = date.getDate();
+      d = d < 10 ? ('0' + d) : d;
+      let h = date.getHours();
+      h = h < 10 ? ('0' + h) : h;
+      let m = date.getMinutes();
+      m = m < 10 ? ('0' + m) : m;
+      let s = date.getSeconds();
+      s = s < 10 ? ('0' + s) : s;
+      return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
+    },
+
+
   },
 }
 
