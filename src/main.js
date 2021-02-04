@@ -8,6 +8,12 @@ import { sync } from 'vuex-router-sync'
 
 import VJsoneditor from 'v-jsoneditor'
 
+
+var VueCodeMirror = require('vue-codemirror-lite')
+
+Vue.use(VueCodeMirror)
+
+
 Vue.use(VJsoneditor)
 
 Vue.config.productionTip = false
