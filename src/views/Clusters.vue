@@ -23,7 +23,7 @@
                 <v-row cols="12" sm="6" md="4">
                   <v-text-field v-model="editedItem.namespace" label="命名空间"></v-text-field>
                 </v-row>
-                      <v-row cols="12" sm="6" md="4">
+                <v-row cols="12" sm="6" md="4">
                   <v-text-field v-model="editedItem.register" label="注册中心"></v-text-field>
                 </v-row>
                 <v-row cols="12" sm="6" md="4">
@@ -61,12 +61,30 @@
       </router-link>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon small class="mr-2" @click="editItem(item)">
-        mdi-pencil
-      </v-icon>
-      <v-icon small color="red" @click="deleteItem(item)">
-        mdi-delete
-      </v-icon>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon small class="mr-2"   @click="detail(item)" v-bind="attrs" v-on="on" >
+            mdi-details
+          </v-icon>
+        </template>
+        <span>详情</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon small class="mr-2" @click="editItem(item)" v-bind="attrs" v-on="on">
+            mdi-pencil
+          </v-icon>
+        </template>
+        <span>编辑</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon small class="mr-2" @click="deleteItem(item)"  v-bind="attrs" v-on="on">
+            mdi-delete
+          </v-icon>
+        </template>
+        <span>删除</span>
+      </v-tooltip>
     </template>
     <template v-slot:no-data>
       <v-btn color="primary" @click="initialize">
@@ -89,7 +107,7 @@ export default {
     headers: [
       { text: '命名空间', value: 'namespace', },
       { text: '描述', value: 'desc', sortable: false, },
-      { text: '注册中心', value: 'desc', sortable: false, },
+      { text: '注册中心', value: 'register', sortable: false, },
       { text: '创建时间', value: 'create_time' },
       { text: '更新时间', value: 'update_time' },
       { text: '操作', value: 'actions', sortable: false },
@@ -272,6 +290,11 @@ export default {
       s = s < 10 ? ('0' + s) : s;
       return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
     },
+
+    detail(item){
+      console.log(item)
+      this.$router.push("/status/"+item.id)
+    }
 
 
   },

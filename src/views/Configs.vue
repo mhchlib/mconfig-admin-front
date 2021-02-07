@@ -77,6 +77,24 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog v-model="enabledeploy" max-width="500px">
+            <v-card>
+              <v-card-title>
+                部署
+              </v-card-title>
+              <v-card-text>
+                <v-select :items="clusters" item-value="id" item-text="name" label="选择集群" solo v-model="clusterid"></v-select>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn color="primary" text @click="enabledeploy = false">
+                  取消
+                </v-btn>
+                <v-btn color="primary" text @click="deploy">
+                  部署
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-toolbar>
       </template>
       <template v-slot:item.name="{ item }">
@@ -88,12 +106,30 @@
         </v-btn>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon small color="red" @click="deleteItem(item)">
-          mdi-delete
-        </v-icon>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon small class="mr-2" @click="showDeployConfgDialog(item)" v-bind="attrs" v-on="on">
+              mdi-grain
+            </v-icon>
+          </template>
+          <span>部署</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon small class="mr-2" @click="editItem(item)" v-bind="attrs" v-on="on">
+              mdi-pencil
+            </v-icon>
+          </template>
+          <span>编辑</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon small class="mr-2" @click="deleteItem(item)" v-bind="attrs" v-on="on">
+              mdi-delete
+            </v-icon>
+          </template>
+          <span>删除</span>
+        </v-tooltip>
       </template>
       <template v-slot:no-data>
         <v-btn color="primary" @click="initialize">
@@ -113,6 +149,10 @@ export default {
     codemirror
   },
   data: () => ({
+    clusterid:-1,
+    clusters: [
+    ],
+    enabledeploy:false,
     currentId:-1,
     showConfigDialog: false,
     config: "",
@@ -346,10 +386,47 @@ export default {
       });
    
     },
-
     cancelSaveConfig(){
       this.showConfigDialog = false
     },
+    showDeployConfgDialog(item){
+      this.currentId = item.id
+      //获取集群信息
+      var _this = this
+       axios.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
+          limit: 100000,
+      }).then(function(res) {
+        console.log(res.data.data)
+        var clusters = res.data.data
+        for (var i = 0; i < clusters.length; i++) {
+          clusters[i]["name"] = clusters[i]["namespace"]+ " -- "+ clusters[i]["register"]
+        }
+        _this.clusters = clusters
+      _this.enabledeploy=true
+      }).catch(function(error) {
+        console.log(error);
+      });
+    },
+    deploy(){
+      var _this = this
+       axios.post('/api/v1/deploy/config', { // 还可以直接把参数拼接在url后边
+          config: _this.currentId,
+          cluster: _this.clusterid,
+       }).then(function(res) {
+        console.log(res.data.data)
+        if (res.data.code==1002) {
+          alert("部署成功")
+        }else{
+          alert(res.data.data)
+        }
+        _this.enabledeploy = false
+
+        }).catch(function(error) {
+          console.log(error);
+        _this.enabledeploy = false
+
+        });
+    }
   },
 
 }
