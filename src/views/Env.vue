@@ -11,13 +11,22 @@
                 <v-chip class="ma-2" color="primary" v-if="filterModeMap[selectMode] &&  filterModeMap[selectMode].name == 'lua'">
                     have a test: <a href="https://www.lua.org/cgi-bin/demo" style="color:white;margin-left:10px;">https://www.lua.org/cgi-bin/demo</a>
                 </v-chip>
+                <v-chip class="ma-2" color="primary" v-if="filterModeMap[selectMode] &&  filterModeMap[selectMode].name == 'mep'">
+                    使用方法 <a href="https://github.com/ChenHaoHu/ExpressionParser" style="color:white;margin-left:10px;">https://github.com/ChenHaoHu/ExpressionParser</a>
+                </v-chip>
                 <v-chip class="ma-2" color="green" text-color="white" v-if="filterId==-1">
                     首次编辑
                 </v-chip>
             </div>
             <codemirror v-if="filterModeMap[selectMode] &&  filterModeMap[selectMode].name == 'lua'" v-model="filterCode" :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'monokai'}"></codemirror>
 
-            <codemirror v-if="filterModeMap[selectMode] && filterModeMap[selectMode].name == 'simple'" v-model="filterCode" :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}"></codemirror>
+            <v-jsoneditor v-if="filterModeMap[selectMode] && filterModeMap[selectMode].name == 'simple'" v-model="filterCode" :options="options" :plus="true" height="600px" />
+            <!-- <codemirror v-if="filterModeMap[selectMode] && filterModeMap[selectMode].name == 'simple'" v-model="filterCode" :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}"></codemirror> -->
+
+            <div v-if="filterModeMap[selectMode] && filterModeMap[selectMode].name == 'mep'" style="padding-top:100px;padding-bottom:100px;">
+                <v-text-field v-model="filterCode" :counter="max" :rules="rules" label="表达式" style="width:80%;margin-left:10%;"></v-text-field>
+            </div>
+
             <v-card-actions>
                 <v-btn color="primary" text @click="saveFilter">
                     保存
@@ -59,8 +68,11 @@
                                 <v-row cols="12" sm="6" md="4">
                                     <v-text-field v-model="editedItem.desc" label="环境描述"></v-text-field>
                                 </v-row>
+                                <v-row cols="12" sm="6" md="4">
+                                    <v-text-field v-model="editedItem.weight" label="权重" type="number" ></v-text-field>
+                                </v-row>
                                 <v-row cols="12" sm="6" md="4" v-if="editedIndex == -1">
-                                    <v-text-field v-model="editedItem.key" label="环境密钥(为空会随机生成)"></v-text-field>
+                                    <v-text-field  v-model="editedItem.key" label="环境密钥(为空会随机生成)"></v-text-field>
                                 </v-row>
                             </v-container>
                         </v-card-text>
@@ -174,6 +186,10 @@ export default {
                 text: '环境描述',
                 value: 'desc',
                 sortable: false,
+            }, {
+                text: '权重',
+                value: 'weight',
+                sortable: true,
             },
             {
                 text: '生效条件',
@@ -200,11 +216,16 @@ export default {
             name: '',
             desc: '',
             key: '',
+            weight: 100,
         },
         defaultItem: {
             name: '',
             desc: '',
             key: '',
+            weight: 100,
+        },
+        options: {
+            mode: "code"
         },
     }),
     filters: {
@@ -252,7 +273,9 @@ export default {
                     }
                     this.filterCode = this.filterTmpHistory[this.selectMode].filter
                 }
-
+                if (this.selectMode == 2) {
+                    this.filterCode = JSON.parse(this.filterCode);
+                }
             },
             deep: true,
         }
@@ -270,6 +293,9 @@ export default {
         },
         resetTemplate() {
             this.filterCode = this.filterModeMap[this.selectMode].template
+            if (this.selectMode == 2) {
+                this.filterCode = JSON.parse(this.filterCode);
+            }
         },
         getDataFromApi() {
             this.loading = true
@@ -355,6 +381,7 @@ export default {
                 axios.put('/api/v1/env/base/' + _this.envlist[_this.editedIndex].id, {
                     name: _this.editedItem.name,
                     desc: _this.editedItem.desc,
+                    weight: parseInt(_this.editedItem.weight),
                 }).then(function (res) {
                     _this.getDataFromApi()
                 }).catch(function (error) {
@@ -370,6 +397,7 @@ export default {
                     name: _this.editedItem.name,
                     desc: _this.editedItem.desc,
                     key: _this.editedItem.key,
+                    weight: parseInt(_this.editedItem.weight),
                 }).then(function (res) {
                     console.log(res.data.data)
                     _this.getDataFromApi()
@@ -423,6 +451,9 @@ export default {
                         console.log(res.data.data)
                         var filter = res.data.data
                         _this.filterCode = filter.filter
+                        if (_this.selectMode == 2) {
+                            _this.filterCode = JSON.parse(_this.filterCode);
+                        }
                         _this.filter = filter
                         var modes = _this.filterModeDic
                         var flag = false
@@ -433,6 +464,7 @@ export default {
                                 if (modes[i].id == filter.mode) {
                                     _this.filterMode = modes[i]
                                     _this.selectMode = modes[i].id
+                                    _this.selectModeHistory = _this.selectMode
                                     flag = true
                                     break
                                 }
@@ -453,11 +485,16 @@ export default {
             });
         },
         saveFilter() {
+            var code = ""
+            code = this.filterCode
+            if (this.selectMode == 2) {
+                code = JSON.stringify(this.filterCode);
+            }
             var _this = this
             if (_this.filterId != -1) {
                 axios.put('/api/v1/filter', {
                     id: _this.filterId,
-                    filter: _this.filterCode,
+                    filter: code,
                     mode: _this.selectMode
                 }).then(function (res) {
                     _this.showFilterDialog = false
@@ -466,8 +503,8 @@ export default {
                 });
             } else {
                 axios.post('/api/v1/filter', {
-                    filter: _this.filterCode,
-                     mode: _this.selectMode
+                    filter: code,
+                    mode: _this.selectMode
                 }).then(function (res) {
                     if (typeof (res.data.data) == "number") {
                         //进行绑定

@@ -78,7 +78,7 @@
                     </v-alert>
                 </v-col>
                 <v-col cols="12" md="6" lg="4" v-if="showType == 'filter'">
-                    <codemirror v-model=" filterVal"  :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'bespin'}">
+                    <codemirror v-model=" filterVal"  :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}">
                     </codemirror>
                     <v-btn depressed color="primary" style="margin-top: 30px;margin-bottom: 10px;" @click="saveChange">
                         微调保存
@@ -98,7 +98,7 @@ import axios from "axios"
 
 
 require('codemirror/mode/css/css')
-require('codemirror/theme/bespin.css')
+require('codemirror/theme/mdn-like.css')
 require('codemirror/mode/lua/lua')
 
 export default {
