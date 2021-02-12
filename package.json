@@ -13,6 +13,7 @@
     "axios": "^0.21.1",
     "v-jsoneditor": "^1.4.2",
     "vue": "^2.6.11",
+    "vue-codemirror-lite": "^1.0.4",
     "vue-meta": "^2.3.3",
     "vue-router": "^3.1.6",
     "vuetify": "^2.3.13",
