@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["default-footer"],{"51ef":function(e,n,t){"use strict";t.r(n);var o=function(){var e=this,n=e.$createElement,t=e._self._c||n;return t("div")},l=[],u=t("81d3"),a={name:"DefaultFooter",components:{Links:u["default"]}},r=a,s=t("2877"),c=Object(s["a"])(r,o,l,!1,null,null,null);n["default"]=c.exports}}]);
+//# sourceMappingURL=default-footer.6b1a297a.js.map
