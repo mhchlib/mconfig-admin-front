@@ -94,7 +94,6 @@
   </v-data-table>
 </template>
 <script>
-import axios from "axios"
 
 export default {
   data: () => ({
@@ -168,7 +167,7 @@ export default {
     getDataFromApi() {
       this.loading = true
       var _this = this
-      axios.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
+      this.$http.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
         params: {
           limit: _this.options.itemsPerPage,
           offset: (_this.options.itemsPerPage) * (_this.options.page - 1),
@@ -209,7 +208,7 @@ export default {
       // this.clusterlist.splice(this.editedIndex, 1)
       this.closeDelete()
       var _this = this
-      axios.delete('/api/v1/cluster/' + _this.clusterlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
+      this.$http.delete('/api/v1/cluster/' + _this.clusterlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
         params: {
 
         }
@@ -243,7 +242,7 @@ export default {
         //编辑
         // Object.assign(this.clusterlist[this.editedIndex], this.editedItem)
         var _this = this
-        axios.put('/api/v1/cluster/' + _this.clusterlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
+        this.$http.put('/api/v1/cluster/' + _this.clusterlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
           namespace: _this.editedItem.namespace,
           register: _this.editedItem.register,
           desc: _this.editedItem.desc,
@@ -257,7 +256,7 @@ export default {
       } else {
         //新建
         var _this = this
-        axios.post('/api/v1/cluster/', { // 还可以直接把参数拼接在url后边
+        this.$http.post('/api/v1/cluster/', { // 还可以直接把参数拼接在url后边
           namespace: _this.editedItem.namespace,
           register: _this.editedItem.register,
           desc: _this.editedItem.desc,

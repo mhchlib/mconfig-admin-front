@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import axios from "axios"
 
 export default {
     name: 'DashboardView',
@@ -28,7 +27,7 @@ export default {
     computed: {},
     mounted() {
         var _this = this
-        axios.get('/api/v1/dashboard', { // 还可以直接把参数拼接在url后边
+        this.$http.get('/api/v1/dashboard', { // 还可以直接把参数拼接在url后边
         }).then(function (res) {
             console.log(res.data.data)
             var data = res.data.data
@@ -38,7 +37,7 @@ export default {
                     color: '#FD9A13',
                     icon: 'mdi-wall',
                     title: '应用',
-                    value: data["app"],
+                    value: data["app"]+"",
                 },
                 {
                     // actionIcon: 'mdi-tag',
@@ -46,7 +45,7 @@ export default {
                     color: 'primary',
                     icon: 'mdi-account',
                     title: '用户',
-                    value: data["user"],
+                    value: data["user"]+"",
                 },
                 {
                     // actionIcon: 'mdi-calendar-range',
@@ -54,7 +53,7 @@ export default {
                     color: 'success',
                     icon: 'mdi-vector-difference',
                     title: '集群',
-                    value: data["cluster"],
+                    value: data["cluster"]+"",
                 },
                 {
                     // actionIcon: 'mdi-history',
@@ -62,7 +61,7 @@ export default {
                     color: 'info',
                     icon: 'mdi-focus-field',
                     title: '配置',
-                    value: data["config"],
+                    value: data["config"]+"",
                 },
             ]
         });

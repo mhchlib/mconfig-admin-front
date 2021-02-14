@@ -138,7 +138,6 @@
 </template>
 
 <script>
-import axios from "axios"
 
 require('codemirror/mode/lua/lua')
 require('codemirror/mode/css/css')
@@ -300,7 +299,7 @@ export default {
         getDataFromApi() {
             this.loading = true
             var _this = this
-            axios.get('/api/v1/env/list', { // 还可以直接把参数拼接在url后边
+            this.$http.get('/api/v1/env/list', { // 还可以直接把参数拼接在url后边
                 params: {
                     app: _this.app_id,
                     limit: _this.options.itemsPerPage,
@@ -344,7 +343,7 @@ export default {
             // this.envlist.splice(this.editedIndex, 1)
             this.closeDelete()
             var _this = this
-            axios.delete('/api/v1/env/' + _this.envlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
+            this.$http.delete('/api/v1/env/' + _this.envlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
                 params: {
 
                 }
@@ -378,7 +377,7 @@ export default {
                 //编辑
                 // Object.assign(this.envlist[this.editedIndex], this.editedItem)
                 var _this = this
-                axios.put('/api/v1/env/base/' + _this.envlist[_this.editedIndex].id, {
+                this.$http.put('/api/v1/env/base/' + _this.envlist[_this.editedIndex].id, {
                     name: _this.editedItem.name,
                     desc: _this.editedItem.desc,
                     weight: parseInt(_this.editedItem.weight),
@@ -392,7 +391,7 @@ export default {
             } else {
                 //新建
                 var _this = this
-                axios.post('/api/v1/env/', { // 还可以直接把参数拼接在url后边
+                this.$http.post('/api/v1/env/', { // 还可以直接把参数拼接在url后边
                     app: parseInt(_this.app_id),
                     name: _this.editedItem.name,
                     desc: _this.editedItem.desc,
@@ -434,7 +433,7 @@ export default {
             this.filterCode = ""
             var _this = this
 
-            axios.get('/api/v1/filter/modes', { // 还可以直接把参数拼接在url后边
+            this.$http.get('/api/v1/filter/modes', { // 还可以直接把参数拼接在url后边
             }).then(function (res) {
                 console.log(res.data.data)
                 var modes = res.data.data
@@ -446,7 +445,7 @@ export default {
                 }
                 _this.filterModeMap = map;
                 if (_this.filterId != -1) {
-                    axios.get('/api/v1/filter/base/' + _this.filterId, { // 还可以直接把参数拼接在url后边
+                    this.$http.get('/api/v1/filter/base/' + _this.filterId, { // 还可以直接把参数拼接在url后边
                     }).then(function (res) {
                         console.log(res.data.data)
                         var filter = res.data.data
@@ -492,7 +491,7 @@ export default {
             }
             var _this = this
             if (_this.filterId != -1) {
-                axios.put('/api/v1/filter', {
+                this.$http.put('/api/v1/filter', {
                     id: _this.filterId,
                     filter: code,
                     mode: _this.selectMode
@@ -502,13 +501,13 @@ export default {
                     console.log(error);
                 });
             } else {
-                axios.post('/api/v1/filter', {
+                this.$http.post('/api/v1/filter', {
                     filter: code,
                     mode: _this.selectMode
                 }).then(function (res) {
                     if (typeof (res.data.data) == "number") {
                         //进行绑定
-                        axios.put('/api/v1/env/filter/' + _this.currentId, {
+                        this.$http.put('/api/v1/env/filter/' + _this.currentId, {
                             filter: res.data.data
                         }).then(function (res) {
                             _this.showFilterDialog = false

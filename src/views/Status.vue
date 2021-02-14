@@ -94,7 +94,6 @@
 </template>
 
 <script>
-import axios from "axios"
 
 
 require('codemirror/mode/css/css')
@@ -175,7 +174,7 @@ export default {
         getClusterList() {
             //获取集群列表
             var _this = this
-            axios.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
+            this.$http.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
                 limit: 100000,
             }).then(function (res) {
                 console.log(res.data.data)
@@ -191,7 +190,7 @@ export default {
         getClusterData() {
             //获取集群信息
             var _this = this
-            axios.get('/api/v1/cluster/self/' + _this.clusterid, { // 还可以直接把参数拼接在url后边
+            this.$http.get('/api/v1/cluster/self/' + _this.clusterid, { // 还可以直接把参数拼接在url后边
             }).then(function (res) {
                 _this.cluster = res.data.data
                 _this.stats = []
@@ -236,7 +235,7 @@ export default {
         getServiceData(address) {
             var _this = this
 
-            axios.post('/api/v1/service/detail', { // 还可以直接把参数拼接在url后边
+            this.$http.post('/api/v1/service/detail', { // 还可以直接把参数拼接在url后边
                 cluster: _this.clusterid,
                 service: address,
             }).then(function (res) {
@@ -327,7 +326,7 @@ export default {
                 }
             }
 
-            axios.post('/api/v1/service', {
+            this.$http.post('/api/v1/service', {
                 service: _this.currentService,
                 app: app,
                 env: env,
@@ -351,7 +350,7 @@ export default {
                 var select = selects[i]
                 console.log(select)
                 var _this = this
-                axios.post('/api/v1/service/delete', { // 还可以直接把参数拼接在url后边
+                this.$http.post('/api/v1/service/delete', { // 还可以直接把参数拼接在url后边
                     service: _this.currentService,
                     type: select.type,
                     app: select.app,

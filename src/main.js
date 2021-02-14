@@ -8,6 +8,8 @@ import { sync } from 'vuex-router-sync'
 
 import VJsoneditor from 'v-jsoneditor'
 
+import axios from './http/http'
+Vue.prototype.$http = axios
 
 var VueCodeMirror = require('vue-codemirror-lite')
 

@@ -271,7 +271,6 @@
 </template>
 
 <script>
-import axios from "axios"
 
 import {
     codemirror
@@ -461,7 +460,7 @@ export default {
         getDataFromApi() {
             this.loading = true
             var _this = this
-            axios.get('/api/v1/config/list', { // 还可以直接把参数拼接在url后边
+            this.$http.get('/api/v1/config/list', { // 还可以直接把参数拼接在url后边
                 params: {
                     app: _this.app_id,
                     env: _this.env_id,
@@ -512,7 +511,7 @@ export default {
             // this.envlist.splice(this.editedIndex, 1)
             this.closeDelete()
             var _this = this
-            axios.delete('/api/v1/config/' + _this.envlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
+            this.$http.delete('/api/v1/config/' + _this.envlist[_this.editedIndex].id, { // 还可以直接把参数拼接在url后边
                 params: {
 
                 }
@@ -531,7 +530,7 @@ export default {
             var _this = this
             console.log(_this.tags.taglist)
             console.log(_this.tags.editedIndex)
-            axios.delete('/api/v1/tag/' + _this.tags.taglist[_this.tags.editedIndex].id, { // 还可以直接把参数拼接在url后边
+            this.$http.delete('/api/v1/tag/' + _this.tags.taglist[_this.tags.editedIndex].id, { // 还可以直接把参数拼接在url后边
             }).then(function (res) {
                 _this.getTagsFromApi(_this.currentId)
             }).catch(function (error) {
@@ -569,7 +568,7 @@ export default {
                 //编辑
                 // Object.assign(this.envlist[this.editedIndex], this.editedItem)
                 var _this = this
-                axios.put('/api/v1/config/base/' + _this.envlist[_this.editedIndex].id, {
+                this.$http.put('/api/v1/config/base/' + _this.envlist[_this.editedIndex].id, {
                     name: _this.editedItem.name,
                     desc: _this.editedItem.desc,
                 }).then(function (res) {
@@ -582,7 +581,7 @@ export default {
             } else {
                 //新建
                 var _this = this
-                axios.post('/api/v1/config/', { // 还可以直接把参数拼接在url后边
+                this.$http.post('/api/v1/config/', { // 还可以直接把参数拼接在url后边
                     app: parseInt(_this.app_id),
                     env: parseInt(_this.env_id),
                     name: _this.editedItem.name,
@@ -630,7 +629,7 @@ export default {
         },
         saveConfig() {
             var _this = this
-            axios.put('/api/v1/config/all/' + _this.currentId, {
+            this.$http.put('/api/v1/config/all/' + _this.currentId, {
                 config: JSON.stringify(_this.config),
                 schema: JSON.stringify(_this.schema)
             }).then(function (res) {
@@ -649,7 +648,7 @@ export default {
             var _this = this
             this.getTagsFromApi(_this.currentId, 0, 10000)
 
-            axios.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
+            this.$http.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
                 limit: 100000,
             }).then(function (res) {
                 console.log(res.data.data)
@@ -665,7 +664,7 @@ export default {
         },
         deploy() {
             var _this = this
-            axios.post('/api/v1/deploy/config', { // 还可以直接把参数拼接在url后边
+            this.$http.post('/api/v1/deploy/config', { // 还可以直接把参数拼接在url后边
                 tag: _this.tagId,
                 cluster: _this.clusterid,
             }).then(function (res) {
@@ -699,7 +698,7 @@ export default {
         },
         buildTag() {
             var _this = this
-            axios.post('/api/v1/tag', { // 还可以直接把参数拼接在url后边
+            this.$http.post('/api/v1/tag', { // 还可以直接把参数拼接在url后边
                 config: _this.currentId,
                 tag: _this.tags.editedItem.tag,
                 desc: _this.tags.editedItem.desc,
@@ -721,7 +720,7 @@ export default {
                 limit = _this.tagsOptions.itemsPerPage;
             }
 
-            axios.get('/api/v1/tag/list', { // 还可以直接把参数拼接在url后边
+            this.$http.get('/api/v1/tag/list', { // 还可以直接把参数拼接在url后边
                 params: {
                     config: config,
                     limit: limit,
@@ -748,7 +747,7 @@ export default {
             this.previewSchema = ""
             this.showConfigPreviewDialog = true
             var _this = this
-            axios.get('/api/v1/tag/self/' + item.id, { // 还可以直接把参数拼接在url后边
+            this.$http.get('/api/v1/tag/self/' + item.id, { // 还可以直接把参数拼接在url后边
             }).then(function (res) {
                 _this.previewConfig = JSON.parse(res.data.data.config)
                 _this.previewSchema = JSON.parse(res.data.data.schema)
