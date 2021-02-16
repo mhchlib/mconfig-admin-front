@@ -234,7 +234,6 @@ export default {
 
         getServiceData(address) {
             var _this = this
-
             this.$http.post('/api/v1/service/detail', { // 还可以直接把参数拼接在url后边
                 cluster: _this.clusterid,
                 service: address,
@@ -299,7 +298,6 @@ export default {
         },
 
         saveChange() {
-
             var _this = this
             _this.overlay = true
             var app = ""

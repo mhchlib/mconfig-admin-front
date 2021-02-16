@@ -6,8 +6,11 @@ import {
   layout,
   route,
 } from '@/util/routes'
+import { setCookie, getCookie, delCookie } from '../util/cookie'
+
 
 Vue.use(Router)
+import Login from '@/views/Login.vue'
 
 const router = new Router({
   mode: 'history',
@@ -21,6 +24,7 @@ const router = new Router({
   routes: [
     layout('Default', [
       route('Dashboard'),
+      route('Dashboard', null, '/'),
       route('App', null, '/app'),
       route('Env', null, '/app/env/:app'),
       route('Configs', null, '/app/configs/:app/:env'),
@@ -33,10 +37,18 @@ const router = new Router({
       route('Logs', null, '/logs'),
       route('Profile', null, '/profile'),
     ]),
+    { path: '/login', component: Login },
   ],
 })
 
 router.beforeEach((to, from, next) => {
+  if(!to.path.endsWith('login') && !to.path.endsWith('login/')){
+    //check token exist
+    console.log(getCookie("token"))
+    if(!getCookie("token")){
+      return next({path:'/login'})
+    }
+  }
   return to.path.endsWith('/') ? next() : next(trailingSlash(to.path))
 })
 

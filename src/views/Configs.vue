@@ -43,7 +43,7 @@
             </v-card-actions>
         </v-card>
     </div>
-    <v-data-table v-else :headers="headers" :items="envlist" class="elevation-1" :options.sync="options" :loading="loading">
+    <v-data-table  v-if="!showConfigDialog && !showConfigPreviewDialog " :headers="headers" :items="envlist" class="elevation-1" :options.sync="options" :loading="loading">
         <template v-slot:top>
             <v-toolbar flat>
                 <v-toolbar-title>配置</v-toolbar-title>

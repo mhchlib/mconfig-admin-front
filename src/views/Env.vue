@@ -507,7 +507,7 @@ export default {
                 }).then(function (res) {
                     if (typeof (res.data.data) == "number") {
                         //进行绑定
-                        this.$http.put('/api/v1/env/filter/' + _this.currentId, {
+                        _this.$http.put('/api/v1/env/filter/' + _this.currentId, {
                             filter: res.data.data
                         }).then(function (res) {
                             _this.showFilterDialog = false

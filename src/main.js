@@ -11,6 +11,10 @@ import VJsoneditor from 'v-jsoneditor'
 import axios from './http/http'
 Vue.prototype.$http = axios
 
+import {setCookie,getCookie,delCookie} from './util/cookie'
+Vue.prototype.$cookieStore = {setCookie,getCookie,delCookie}
+
+
 var VueCodeMirror = require('vue-codemirror-lite')
 
 Vue.use(VueCodeMirror)

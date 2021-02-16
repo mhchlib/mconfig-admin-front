@@ -16,5 +16,5 @@ module.exports = {
     }
   },
   transpileDependencies: ['vuetify'],
-  publicPath: '/mconfig-admin-front/',
+  publicPath: '/',
 }
