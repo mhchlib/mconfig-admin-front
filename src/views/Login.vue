@@ -4,14 +4,21 @@
     <div id='stars2'></div>
     <div id='stars3'></div>
     <v-container class="form">
-        <div class="title">mconfig admin</div>
-        <v-form ref="form" v-model="valid" lazy-validation>
-            <v-text-field label="用户名" placeholder="xxxx@xxx.xxx" v-model="name" required :rules="nameRules"></v-text-field>
-            <v-text-field label="密码" placeholder="***********" v-model="password" type="password" required :rules="passwordRules"></v-text-field>
-            <v-btn v-if="valid==true" class="mr-4" @click="login">
-                登陆
-            </v-btn>
-        </v-form>
+        <v-row cols="12" sm="6" md="4">
+            <v-col class="d-flex" cols="12" sm="6" style=" display: flex;align-items: center; justify-content: center;">
+                <div class="title">mconfig admin</div>
+            </v-col>
+            <v-col class="d-flex" cols="12" sm="6">
+                <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-text-field label="用户名" placeholder="xxxx@xxx.xxx" v-model="name" required :rules="nameRules" ></v-text-field>
+                    <v-text-field label="密码" placeholder="***********" v-model="password" type="password" required :rules="passwordRules" ></v-text-field>
+                    <v-btn class="mr-4" @click="login">
+                        登陆
+                    </v-btn>
+                </v-form>
+            </v-col>
+        </v-row>
+
     </v-container>
 </div>
 </template>
@@ -30,11 +37,18 @@ export default {
             v => !!v || 'Password is required',
         ],
     }),
-
+    mounted() {
+        document.onkeydown = this.cdk;
+    },
     methods: {
+        cdk() {
+            if (event.keyCode == 13) {
+                this.login();
+            }
+        },
         login() {
-            if (this.name == "" || this.password == "") {
-                alert("账号密码不能为空")
+            var validate = this.$refs.form.validate()
+            if (validate == false) {
                 return
             }
             var _this = this
@@ -42,11 +56,13 @@ export default {
                 username: _this.name,
                 password: _this.password,
             }).then(function (res) {
-                if (res.data.code == 1002){
-                   _this.$router.push({name: '/'});
-                   _this.$cookieStore.setCookie( 'token' ,res.data.data.token, 60 * 60);//存入用户名，设置有效时间1分钟
-                   location.reload()  
-                }else{
+                if (res.data.code == 1002) {
+                    _this.$cookieStore.setCookie('token', res.data.data.token, 60 * 60); //存入用户名，设置有效时间1分钟
+                    _this.$router.push({
+                        name: '/'
+                    });
+                    location.reload()
+                } else {
                     alert(res.data.msg)
                 }
             }).catch(function (error) {
@@ -73,6 +89,7 @@ export default {
     text-align: center;
     margin-bottom: 20px;
     font-size: 30px;
+
 }
 
 .page {
@@ -142,7 +159,6 @@ export default {
     top: 50%;
     left: 0;
     right: 0;
-    color: #fff;
     text-align: center;
     font-family: "lato", sans-serif;
     font-weight: 300;
