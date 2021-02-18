@@ -72,7 +72,9 @@ export default {
                     });
                     location.reload()
                 } else {
-                    alert(res.data.msg)
+                    // alert(res.data.msg)
+
+                    _this.$message.error(res.data.msg);
                 }
             }).catch(function (error) {
                 console.log(error);

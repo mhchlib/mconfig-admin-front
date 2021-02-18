@@ -351,8 +351,9 @@ export default {
                 _this.getDataFromApi()
             }).catch(function (error) {
                 console.log(error);
-                alert(error.data.msg)
-            });
+                // alert(error.data.msg)
+    _this.$message.error(error.data.msg);
+});
 
         },
 
@@ -385,7 +386,8 @@ export default {
                     _this.getDataFromApi()
                 }).catch(function (error) {
                     console.log(error);
-                    alert(error.data.msg)
+                    // alert(error.data.msg)
+                        _this.$message.error(error.data.msg);
                 });
 
             } else {
@@ -469,7 +471,8 @@ export default {
                                 }
                             }
                             if (flag == false) {
-                                alert("filter mode 获取失败")
+                                // alert("filter mode 获取失败")
+                                     _this.$message.error("filter mode 获取失败");
                                 return
                             }
                         } else {

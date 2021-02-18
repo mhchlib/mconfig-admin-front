@@ -78,7 +78,7 @@
                     </v-alert>
                 </v-col>
                 <v-col cols="12" md="6" lg="4" v-if="showType == 'filter'">
-                    <codemirror v-model="filterVal.code"  :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}">
+                    <codemirror v-model="filterVal.code" :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}">
                     </codemirror>
                     <v-btn depressed color="primary" style="margin-top: 30px;margin-bottom: 10px;" @click="saveChange">
                         微调保存
@@ -94,8 +94,6 @@
 </template>
 
 <script>
-
-
 require('codemirror/mode/css/css')
 require('codemirror/theme/mdn-like.css')
 require('codemirror/mode/lua/lua')
@@ -337,7 +335,11 @@ export default {
             }).then(function (res) {
                 console.log(res.data.data)
                 _this.overlay = false
-                alert("微调成功")
+                // alert("微调成功")
+                _this.$message({
+                    message: '微调成功',
+                    type: 'success'
+                });
                 this.getServiceData(_this.currentService)
             }).catch(function (error) {
                 _this.overlay = false
@@ -359,7 +361,11 @@ export default {
                     config: select.name,
                 }).then(function (res) {
                     console.log(res.data.data)
-                    alert("删除成功")
+                    // alert("删除成功")
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
                     _this.getServiceData(_this.currentService)
 
                 }).catch(function (error) {

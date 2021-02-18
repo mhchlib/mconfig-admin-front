@@ -43,7 +43,7 @@
             </v-card-actions>
         </v-card>
     </div>
-    <v-data-table  v-if="!showConfigDialog && !showConfigPreviewDialog " :headers="headers" :items="envlist" class="elevation-1" :options.sync="options" :loading="loading">
+    <v-data-table v-if="!showConfigDialog && !showConfigPreviewDialog " :headers="headers" :items="envlist" class="elevation-1" :options.sync="options" :loading="loading">
         <template v-slot:top>
             <v-toolbar flat>
                 <v-toolbar-title>配置</v-toolbar-title>
@@ -271,7 +271,6 @@
 </template>
 
 <script>
-
 import {
     codemirror
 } from 'vue-codemirror-lite'
@@ -519,7 +518,8 @@ export default {
                 _this.getDataFromApi()
             }).catch(function (error) {
                 console.log(error);
-                alert(error.data.msg)
+                // alert(error.data.msg)
+                _this.$message.error(error.data.msg);
             });
 
         },
@@ -535,7 +535,8 @@ export default {
                 _this.getTagsFromApi(_this.currentId)
             }).catch(function (error) {
                 console.log(error);
-                alert(error.data.msg)
+                // alert(error.data.msg)
+                _this.$message.error(error.data.msg);
             });
 
         },
@@ -575,7 +576,8 @@ export default {
                     _this.getDataFromApi()
                 }).catch(function (error) {
                     console.log(error);
-                    alert(error.data.msg)
+                    // alert(error.data.msg)
+                    _this.$message.error(error.data.msg);
                 });
 
             } else {
@@ -670,9 +672,14 @@ export default {
             }).then(function (res) {
                 console.log(res.data.data)
                 if (res.data.code == 1002) {
-                    alert(res.data.msg)
+                    // alert(res.data.msg)
+                    _this.$message({
+                        message: res.data.msg,
+                        type: 'success'
+                    });
                 } else {
-                    alert(res.data.msg)
+                    // alert(res.data.msg)
+                    _this.$message.error(res.data.msg);
                 }
                 _this.enabledeploy = false
 
@@ -704,7 +711,11 @@ export default {
                 desc: _this.tags.editedItem.desc,
             }).then(function (res) {
                 console.log(res.data.data)
-                alert("新建成功")
+                // alert("新建成功")
+                this.$message({
+                    message: "新建成功",
+                    type: 'success'
+                });
                 _this.buildTagDialog = false
             }).catch(function (error) {
                 console.log(error);
@@ -753,7 +764,8 @@ export default {
                 _this.previewSchema = JSON.parse(res.data.data.schema)
             }).catch(function (error) {
                 console.log(error);
-                alert(error.data.msg)
+                // alert(error.data.msg)
+                    _this.$message.error(error.data.msg);
             });
         }
     },

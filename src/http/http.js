@@ -33,6 +33,7 @@ axios.interceptors.request.use(
 
 // 路由响应拦截
 // http response 拦截器
+var _this = this
 axios.interceptors.response.use(
   response => {
     if (response.data.resultCode == "404") {
@@ -43,7 +44,9 @@ axios.interceptors.response.use(
       return
     } else {
       if (response.data.code == "1003") {
-        alert("token 无效")
+        // alert("token 无效")
+        _this.$message.error("token 无效");
+
         //跳转到登陆页面
         window.location.href = "/login";
         return
@@ -54,7 +57,8 @@ axios.interceptors.response.use(
   error => {
     console.log(error)
     if (error.response.status == "403") {
-      alert("您没有该操作权限")
+      _this.$message.error("您没有该操作权限");
+      // alert("您没有该操作权限")
       return
     }
     return Promise.reject(error.response)   // 返回接口返回的错误信息
