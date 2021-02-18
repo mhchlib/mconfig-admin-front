@@ -36,7 +36,7 @@ export default {
                     // actionText: 'Get More Space...',
                     color: '#FD9A13',
                     icon: 'mdi-wall',
-                    title: '应用',
+                    title: '应用总数',
                     value: data["app"]+"",
                 },
                 {
@@ -44,7 +44,7 @@ export default {
                     // actionText: 'Tracked from Google Analytics',
                     color: 'primary',
                     icon: 'mdi-account',
-                    title: '用户',
+                    title: '用户总数',
                     value: data["user"]+"",
                 },
                 {
@@ -52,7 +52,7 @@ export default {
                     // actionText: 'Last 24 Hours',
                     color: 'success',
                     icon: 'mdi-vector-difference',
-                    title: '集群',
+                    title: '集群总数',
                     value: data["cluster"]+"",
                 },
                 {
@@ -60,7 +60,7 @@ export default {
                     // actionText: 'Just Updated',
                     color: 'info',
                     icon: 'mdi-focus-field',
-                    title: '配置',
+                    title: '配置总数',
                     value: data["config"]+"",
                 },
             ]

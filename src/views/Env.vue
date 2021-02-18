@@ -445,7 +445,7 @@ export default {
                 }
                 _this.filterModeMap = map;
                 if (_this.filterId != -1) {
-                    this.$http.get('/api/v1/filter/base/' + _this.filterId, { // 还可以直接把参数拼接在url后边
+                    _this.$http.get('/api/v1/filter/base/' + _this.filterId, { // 还可以直接把参数拼接在url后边
                     }).then(function (res) {
                         console.log(res.data.data)
                         var filter = res.data.data

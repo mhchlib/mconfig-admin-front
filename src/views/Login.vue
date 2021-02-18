@@ -6,12 +6,21 @@
     <v-container class="form">
         <v-row cols="12" sm="6" md="4">
             <v-col class="d-flex" cols="12" sm="6" style=" display: flex;align-items: center; justify-content: center;">
-                <div class="title">mconfig admin</div>
+                <div>
+                    <div>
+                        <v-img :src="
+          require('@/assets/vmd.svg')" />
+                    </div>
+                    <div class="text-h4" style="text-align:center">
+                        <strong class="mr-1 font-weight-black">MCONFIG</strong>
+                        <span class="primary--text">ADMIN</span>
+                    </div>
+                </div>
             </v-col>
-            <v-col class="d-flex" cols="12" sm="6">
+            <v-col class="d-flex" cols="12" sm="6" >
                 <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-text-field label="用户名" placeholder="xxxx@xxx.xxx" v-model="name" required :rules="nameRules" ></v-text-field>
-                    <v-text-field label="密码" placeholder="***********" v-model="password" type="password" required :rules="passwordRules" ></v-text-field>
+                    <v-text-field label="用户名" placeholder="xxxx@xxx.xxx" v-model="name" required :rules="nameRules"></v-text-field>
+                    <v-text-field label="密码" placeholder="***********" v-model="password" type="password" required :rules="passwordRules"></v-text-field>
                     <v-btn class="mr-4" @click="login">
                         登陆
                     </v-btn>

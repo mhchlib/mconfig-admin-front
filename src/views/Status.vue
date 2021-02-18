@@ -69,7 +69,7 @@
                     </v-btn>
                 </v-col>
                 <v-col cols="12" md="6" lg="4" v-if="showType == 'config'">
-                    <v-jsoneditor v-model=" configVal" :options="options" :plus="true" height="600px" />
+                    <v-jsoneditor v-model="configVal" :options="options" :plus="true" height="600px" />
                     <v-btn depressed color="primary" style="margin-top: 30px; margin-bottom: 10px;" @click="saveChange">
                         微调保存
                     </v-btn>
@@ -78,7 +78,7 @@
                     </v-alert>
                 </v-col>
                 <v-col cols="12" md="6" lg="4" v-if="showType == 'filter'">
-                    <codemirror v-model=" filterVal"  :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}">
+                    <codemirror v-model="filterVal.code"  :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}">
                     </codemirror>
                     <v-btn depressed color="primary" style="margin-top: 30px;margin-bottom: 10px;" @click="saveChange">
                         微调保存
@@ -162,7 +162,10 @@ export default {
                     if (select.type == "filter") {
                         this.showType = select.type;
                         var data = this.serviceDetailMap
-                        this.filterVal = data['apps'][select.app][select.env]['filter']
+                        // this.filterVal = data['apps'][select.app][select.env]['filter']
+                        var filter = JSON.parse(data['apps'][select.app][select.env]['filter'])
+                        console.log(filter)
+                        this.filterVal = filter
                     }
                 }
 
@@ -320,7 +323,7 @@ export default {
                 }
                 if (select.type == "filter") {
                     var data = this.serviceDetailMap
-                    filter = this.filterVal
+                    filter = JSON.stringify(this.filterVal)
                 }
             }
 

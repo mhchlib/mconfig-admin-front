@@ -670,9 +670,9 @@ export default {
             }).then(function (res) {
                 console.log(res.data.data)
                 if (res.data.code == 1002) {
-                    alert("部署成功")
+                    alert(res.data.msg)
                 } else {
-                    alert(res.data.data)
+                    alert(res.data.msg)
                 }
                 _this.enabledeploy = false
 
