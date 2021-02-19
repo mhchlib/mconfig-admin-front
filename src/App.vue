@@ -13,7 +13,7 @@ export default {
     name: 'App',
     metaInfo: {
         title: 'App',
-        titleTemplate: '%s | Material Dashboard Free',
+        titleTemplate: '%s | Mconfig Admin',
         htmlAttrs: {
             lang: 'en'
         },

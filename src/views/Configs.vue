@@ -712,7 +712,7 @@ export default {
             }).then(function (res) {
                 console.log(res.data.data)
                 // alert("新建成功")
-                this.$message({
+                _this.$message({
                     message: "新建成功",
                     type: 'success'
                 });

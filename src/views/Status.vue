@@ -340,7 +340,7 @@ export default {
                     message: '微调成功',
                     type: 'success'
                 });
-                this.getServiceData(_this.currentService)
+                _this.getServiceData(_this.currentService)
             }).catch(function (error) {
                 _this.overlay = false
                 console.log(error);
@@ -362,7 +362,7 @@ export default {
                 }).then(function (res) {
                     console.log(res.data.data)
                     // alert("删除成功")
-                    this.$message({
+                    _this.$message({
                         message: '删除成功',
                         type: 'success'
                     });

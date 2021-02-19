@@ -69,10 +69,10 @@
                                     <v-text-field v-model="editedItem.desc" label="环境描述"></v-text-field>
                                 </v-row>
                                 <v-row cols="12" sm="6" md="4">
-                                    <v-text-field v-model="editedItem.weight" label="权重" type="number" ></v-text-field>
+                                    <v-text-field v-model="editedItem.weight" label="权重" type="number"></v-text-field>
                                 </v-row>
                                 <v-row cols="12" sm="6" md="4" v-if="editedIndex == -1">
-                                    <v-text-field  v-model="editedItem.key" label="环境密钥(为空会随机生成)"></v-text-field>
+                                    <v-text-field v-model="editedItem.key" label="环境密钥(为空会随机生成)"></v-text-field>
                                 </v-row>
                             </v-container>
                         </v-card-text>
@@ -98,6 +98,24 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+                <v-dialog v-model="enableUpateFilter" max-width="500px">
+                    <v-card>
+                        <v-card-title>
+                            更新集群FILTER
+                        </v-card-title>
+                        <v-card-text>
+                            <v-select :items="clusters" item-value="id" item-text="name" label="选择集群" solo v-model="clusterid"></v-select>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn color="primary" text @click="enableUpateFilter = false">
+                                取消
+                            </v-btn>
+                            <v-btn color="primary" text @click="updateFilterToCluster">
+                                更新
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-toolbar>
         </template>
         <template v-slot:item.name="{ item }">
@@ -111,6 +129,14 @@
             </v-btn>
         </template>
         <template v-slot:item.actions="{ item }">
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-icon small class="mr-2" @click="showDeployUpdateFilterDialog(item)" v-bind="attrs" v-on="on">
+                        mdi-grain
+                    </v-icon>
+                </template>
+                <span>更新FILTER</span>
+            </v-tooltip>
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                     <v-icon small class="mr-2" @click="editItem(item)" v-bind="attrs" v-on="on">
@@ -138,7 +164,6 @@
 </template>
 
 <script>
-
 require('codemirror/mode/lua/lua')
 require('codemirror/mode/css/css')
 require('codemirror/theme/monokai.css')
@@ -153,6 +178,8 @@ export default {
         codemirror
     },
     data: () => ({
+        clusters:[],
+        enableUpateFilter: false,
         filterTmpHistory: {},
         selectMode: -1,
         selectModeHistory: -1,
@@ -296,6 +323,49 @@ export default {
                 this.filterCode = JSON.parse(this.filterCode);
             }
         },
+        showDeployUpdateFilterDialog(item) {
+            this.currentId = item.id
+            //获取集群信息
+            var _this = this
+            this.$http.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
+                limit: 100000,
+            }).then(function (res) {
+                console.log(res.data.data)
+                var clusters = res.data.data
+                for (var i = 0; i < clusters.length; i++) {
+                    clusters[i]["name"] = clusters[i]["namespace"] + " -- " + clusters[i]["register"]
+                }
+                _this.clusters = clusters
+                _this.enableUpateFilter = true
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        updateFilterToCluster(){
+            var _this = this
+            this.$http.post('/api/v1/deploy/filter', { 
+                env: _this.currentId,
+                cluster: _this.clusterid,
+            }).then(function (res) {
+                console.log(res.data.data)
+                if (res.data.code == 1002) {
+                    // alert(res.data.msg)
+                    _this.$message({
+                        message: res.data.msg,
+                        type: 'success'
+                    });
+                } else {
+                    // alert(res.data.msg)
+                    _this.$message.error(res.data.msg);
+                }
+                _this.enableUpateFilter = false
+
+            }).catch(function (error) {
+                console.log(error);
+                _this.enableUpateFilter = false
+
+            });
+        },
         getDataFromApi() {
             this.loading = true
             var _this = this
@@ -352,8 +422,8 @@ export default {
             }).catch(function (error) {
                 console.log(error);
                 // alert(error.data.msg)
-    _this.$message.error(error.data.msg);
-});
+                _this.$message.error(error.data.msg);
+            });
 
         },
 
@@ -387,7 +457,7 @@ export default {
                 }).catch(function (error) {
                     console.log(error);
                     // alert(error.data.msg)
-                        _this.$message.error(error.data.msg);
+                    _this.$message.error(error.data.msg);
                 });
 
             } else {
@@ -472,7 +542,7 @@ export default {
                             }
                             if (flag == false) {
                                 // alert("filter mode 获取失败")
-                                     _this.$message.error("filter mode 获取失败");
+                                _this.$message.error("filter mode 获取失败");
                                 return
                             }
                         } else {

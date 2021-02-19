@@ -44,8 +44,8 @@ axios.interceptors.response.use(
       return
     } else {
       if (response.data.code == "1003") {
-        // alert("token 无效")
-        _this.$message.error("token 无效");
+        alert("token 无效")
+        // this.$message.error("token 无效");
 
         //跳转到登陆页面
         window.location.href = "/login";
@@ -57,8 +57,8 @@ axios.interceptors.response.use(
   error => {
     console.log(error)
     if (error.response.status == "403") {
-      _this.$message.error("您没有该操作权限");
-      // alert("您没有该操作权限")
+      // this.$message.error("您没有该操作权限");
+      alert("您没有该操作权限")
       return
     }
     return Promise.reject(error.response)   // 返回接口返回的错误信息
