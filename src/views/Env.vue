@@ -98,16 +98,16 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-                <v-dialog v-model="enableUpateFilter" max-width="500px">
+                <v-dialog v-model="enableUpdateFilterDialog" max-width="500px">
                     <v-card>
                         <v-card-title>
-                            更新集群FILTER
+                            更新集群环境配置
                         </v-card-title>
                         <v-card-text>
                             <v-select :items="clusters" item-value="id" item-text="name" label="选择集群" solo v-model="clusterid"></v-select>
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn color="primary" text @click="enableUpateFilter = false">
+                            <v-btn color="primary" text @click="enableUpdateFilterDialog = false">
                                 取消
                             </v-btn>
                             <v-btn color="primary" text @click="updateFilterToCluster">
@@ -116,6 +116,25 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+                <v-dialog v-model="enableDeleteFilterDialog" max-width="500px">
+                    <v-card>
+                        <v-card-title>
+                            删除集群上的环境
+                        </v-card-title>
+                        <v-card-text>
+                            <v-select :items="clusters" item-value="id" item-text="name" label="选择集群" solo v-model="clusterid"></v-select>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn color="primary" text @click="enableDeleteFilterDialog = false">
+                                取消
+                            </v-btn>
+                            <v-btn color="primary" text @click="deleteFilterToCluster">
+                                删除
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+
             </v-toolbar>
         </template>
         <template v-slot:item.name="{ item }">
@@ -135,7 +154,14 @@
                         mdi-grain
                     </v-icon>
                 </template>
-                <span>更新FILTER</span>
+                <span>更新集群环境</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-icon small class="mr-2" @click="showDeployDeleteFilterDialog(item)" v-bind="attrs" v-on="on">
+                        mdi-delete-restore </v-icon>
+                </template>
+                <span>删除集群环境</span>
             </v-tooltip>
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
@@ -178,8 +204,10 @@ export default {
         codemirror
     },
     data: () => ({
-        clusters:[],
-        enableUpateFilter: false,
+        clusterid: -1,
+        clusters: [],
+        enableDeleteFilterDialog: false,
+        enableUpdateFilterDialog: false,
         filterTmpHistory: {},
         selectMode: -1,
         selectModeHistory: -1,
@@ -229,6 +257,10 @@ export default {
             {
                 text: '更新时间',
                 value: 'update_time'
+            }, 
+            {
+                text: '最新部署时间',
+                value: 'deploy_time'
             },
             {
                 text: '操作',
@@ -336,14 +368,32 @@ export default {
                     clusters[i]["name"] = clusters[i]["namespace"] + " -- " + clusters[i]["register"]
                 }
                 _this.clusters = clusters
-                _this.enableUpateFilter = true
+                _this.enableUpdateFilterDialog = true
             }).catch(function (error) {
                 console.log(error);
             });
         },
-        updateFilterToCluster(){
+        showDeployDeleteFilterDialog(item) {
+            this.currentId = item.id
+            //获取集群信息
             var _this = this
-            this.$http.post('/api/v1/deploy/filter', { 
+            this.$http.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
+                limit: 100000,
+            }).then(function (res) {
+                console.log(res.data.data)
+                var clusters = res.data.data
+                for (var i = 0; i < clusters.length; i++) {
+                    clusters[i]["name"] = clusters[i]["namespace"] + " -- " + clusters[i]["register"]
+                }
+                _this.clusters = clusters
+                _this.enableDeleteFilterDialog = true
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        updateFilterToCluster() {
+            var _this = this
+            this.$http.post('/api/v1/deploy/filter', {
                 env: _this.currentId,
                 cluster: _this.clusterid,
             }).then(function (res) {
@@ -358,11 +408,37 @@ export default {
                     // alert(res.data.msg)
                     _this.$message.error(res.data.msg);
                 }
-                _this.enableUpateFilter = false
+                _this.enableUpdateFilterDialog = false
+                _this.getDataFromApi()
+            }).catch(function (error) {
+                console.log(error);
+                _this.enableUpdateFilterDialog = false
+
+            });
+        },
+        deleteFilterToCluster() {
+            var _this = this
+            this.$http.post('/api/v1/deploy/filter/delete', {
+                env: _this.currentId,
+                cluster: _this.clusterid,
+            }).then(function (res) {
+                console.log(res.data.data)
+                if (res.data.code == 1002) {
+                    // alert(res.data.msg)
+                    _this.$message({
+                        message: res.data.msg,
+                        type: 'success'
+                    });
+                } else {
+                    // alert(res.data.msg)
+                    _this.$message.error(res.data.msg);
+                }
+                _this.enableDeleteFilterDialog = false
+                _this.getDataFromApi()
 
             }).catch(function (error) {
                 console.log(error);
-                _this.enableUpateFilter = false
+                _this.enableDeleteFilterDialog = false
 
             });
         },
@@ -382,6 +458,7 @@ export default {
                 for (var i = 0; i < list.length; i++) {
                     list[i]['create_time'] = _this.formatDate(list[i]['create_time'] * 1000)
                     list[i]['update_time'] = _this.formatDate(list[i]['update_time'] * 1000)
+                    list[i]['deploy_time'] = list[i]['deploy_time'] != 0 ? _this.formatDate(list[i]['deploy_time'] * 1000) : "-"
                 }
 
                 _this.total = 10

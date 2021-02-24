@@ -68,24 +68,25 @@
                         删除
                     </v-btn>
                 </v-col>
-                <v-col cols="12" md="6" lg="4" v-if="showType == 'config'">
-                    <v-jsoneditor v-model="configVal" :options="options" :plus="true" height="600px" />
+                <v-col cols="12" md="6" lg="8" v-if="showType == 'config'">
                     <v-btn depressed color="primary" style="margin-top: 30px; margin-bottom: 10px;" @click="saveChange">
                         微调保存
                     </v-btn>
                     <v-alert type="warning">
                         微调会导致配置数据不一致和版本化明确，建议别调，走正式发布路线
                     </v-alert>
+                    <v-jsoneditor v-model="configVal.data.val" :options="options" :plus="true" height="400px" />
                 </v-col>
-                <v-col cols="12" md="6" lg="4" v-if="showType == 'filter'">
-                    <codemirror v-model="filterVal.code" :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}">
-                    </codemirror>
-                    <v-btn depressed color="primary" style="margin-top: 30px;margin-bottom: 10px;" @click="saveChange">
+                <v-col cols="12" md="6" lg="8" v-if="showType == 'filter'">
+                     <v-btn depressed color="primary" style="margin-top: 30px;margin-bottom: 10px;" @click="saveChange">
                         微调保存
                     </v-btn>
                     <v-alert type="warning">
                         微调会导致配置数据不一致和版本化不明确，建议走正式发布路线
                     </v-alert>
+                    <codemirror v-model="filterVal.data.code" :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}">
+                    </codemirror>
+                 
                 </v-col>
             </v-row>
         </v-card>
@@ -97,6 +98,10 @@
 require('codemirror/mode/css/css')
 require('codemirror/theme/mdn-like.css')
 require('codemirror/mode/lua/lua')
+
+import {
+    deepClone
+} from '../util/utils'
 
 export default {
     data: () => ({
@@ -155,13 +160,16 @@ export default {
                     if (select.type == "config") {
                         this.showType = select.type;
                         var data = this.serviceDetailMap
-                        this.configVal = JSON.parse(data['apps'][select.app][select.env]['configs'][select.name])
+                        console.log(data['apps'][select.app][select.env]['configs'][select.name])
+                        this.configVal = data['apps'][select.app][select.env]['configs'][select.name]
+                        this.configVal['data']['val'] = JSON.parse(this.configVal['data']['val'])
                     }
                     if (select.type == "filter") {
                         this.showType = select.type;
                         var data = this.serviceDetailMap
                         // this.filterVal = data['apps'][select.app][select.env]['filter']
-                        var filter = JSON.parse(data['apps'][select.app][select.env]['filter'])
+                        console.log(data['apps'][select.app][select.env]['filter'])
+                        var filter = data['apps'][select.app][select.env]['filter']
                         console.log(filter)
                         this.filterVal = filter
                     }
@@ -316,8 +324,10 @@ export default {
                     var data = this.serviceDetailMap
                     config = select.name
                     console.log(this.configVal)
-                    val = JSON.stringify(this.configVal)
-                    filter = data['apps'][select.app][select.env]['filter']
+                    var configVal = deepClone(this.configVal)
+                    configVal['data']['val'] = JSON.stringify(configVal['data']['val'])
+                    val = JSON.stringify(configVal)
+                    filter = JSON.stringify(data['apps'][select.app][select.env]['filter'])
                 }
                 if (select.type == "filter") {
                     var data = this.serviceDetailMap

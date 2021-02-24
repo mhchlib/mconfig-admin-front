@@ -209,6 +209,24 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+                <v-dialog v-model="enableDeleteConfigDialog" max-width="500px">
+                    <v-card>
+                        <v-card-title>
+                            删除集群上的配置
+                        </v-card-title>
+                        <v-card-text>
+                            <v-select :items="clusters" item-value="id" item-text="name" label="选择集群" solo v-model="clusterid"></v-select>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn color="primary" text @click="enableDeleteConfigDialog = false">
+                                取消
+                            </v-btn>
+                            <v-btn color="primary" text @click="deleteConfigToCluster">
+                                删除
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-toolbar>
         </template>
         <template v-slot:item.name="{ item }">
@@ -243,6 +261,14 @@
                     </v-icon>
                 </template>
                 <span>部署</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-icon small class="mr-2" @click="showDeployDeleteConfigDialog(item)" v-bind="attrs" v-on="on">
+                        mdi-delete-restore </v-icon>
+                </template>
+                <span>删除集群上的配置</span>
             </v-tooltip>
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
@@ -280,6 +306,7 @@ export default {
         codemirror
     },
     data: () => ({
+        enableDeleteConfigDialog: false,
         previewConfig: "",
         previewSchema: "",
         showConfigPreviewDialog: false,
@@ -328,6 +355,14 @@ export default {
             {
                 text: '更新时间',
                 value: 'update_time'
+            },
+                  {
+                text: '最新部署时间',
+                value: 'deploy_time'
+            },
+            {
+                text: '最新部署版本',
+                value: 'deploy_tag'
             },
             {
                 text: '操作',
@@ -473,6 +508,7 @@ export default {
                 for (var i = 0; i < list.length; i++) {
                     list[i]['create_time'] = _this.formatDate(list[i]['create_time'] * 1000)
                     list[i]['update_time'] = _this.formatDate(list[i]['update_time'] * 1000)
+                    list[i]['deploy_time'] = list[i]['deploy_time'] != 0 ? _this.formatDate(list[i]['deploy_time'] * 1000) : "-"
                 }
                 _this.total = 10
                 _this.loading = false
@@ -664,6 +700,24 @@ export default {
                 console.log(error);
             });
         },
+        showDeployDeleteConfigDialog(item) {
+            this.currentId = item.id
+            //获取集群信息
+            var _this = this
+            this.$http.get('/api/v1/cluster/list', { // 还可以直接把参数拼接在url后边
+                limit: 100000,
+            }).then(function (res) {
+                console.log(res.data.data)
+                var clusters = res.data.data
+                for (var i = 0; i < clusters.length; i++) {
+                    clusters[i]["name"] = clusters[i]["namespace"] + " -- " + clusters[i]["register"]
+                }
+                _this.clusters = clusters
+                _this.enableDeleteConfigDialog = true
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
         deploy() {
             var _this = this
             this.$http.post('/api/v1/deploy/config', { // 还可以直接把参数拼接在url后边
@@ -689,7 +743,31 @@ export default {
 
             });
         },
+        deleteConfigToCluster() {
+            var _this = this
+            this.$http.post('/api/v1/deploy/config/delete', {
+                cluster: _this.clusterid,
+                config: _this.currentId,
+            }).then(function (res) {
+                console.log(res.data.data)
+                if (res.data.code == 1002) {
+                    // alert(res.data.msg)
+                    _this.$message({
+                        message: res.data.msg,
+                        type: 'success'
+                    });
+                } else {
+                    // alert(res.data.msg)
+                    _this.$message.error(res.data.msg);
+                }
+                _this.enableDeleteConfigDialog = false
 
+            }).catch(function (error) {
+                console.log(error);
+                _this.enableDeleteConfigDialog = false
+
+            });
+        },
         // --------------------- tag --------------------
         showTags(item) {
             this.showTagsDialog = true
@@ -765,7 +843,7 @@ export default {
             }).catch(function (error) {
                 console.log(error);
                 // alert(error.data.msg)
-                    _this.$message.error(error.data.msg);
+                _this.$message.error(error.data.msg);
             });
         }
     },
