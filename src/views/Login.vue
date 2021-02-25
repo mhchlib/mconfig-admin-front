@@ -66,14 +66,13 @@ export default {
                 password: _this.password,
             }).then(function (res) {
                 if (res.data.code == 1002) {
-                    _this.$cookieStore.setCookie('token', res.data.data.token, 60 * 60); //存入用户名，设置有效时间1分钟
+                    _this.$cookieStore.setCookie('token', res.data.data.token, 60 * 60 * 60); //存入用户名，设置有效时间1分钟
                     _this.$router.push({
                         name: '/'
                     });
                     location.reload()
                 } else {
                     // alert(res.data.msg)
-
                     _this.$message.error(res.data.msg);
                 }
             }).catch(function (error) {

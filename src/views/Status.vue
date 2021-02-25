@@ -1,6 +1,7 @@
 <template>
 <div>
     <v-container fluid>
+       <v-overlay :value="overlayAll"></v-overlay>
         <v-row>
             <v-col class="d-flex">
                 <v-select :items="clusters" item-value="id" item-text="name" label="选择集群" solo v-model="clusterid"></v-select>
@@ -105,6 +106,7 @@ import {
 
 export default {
     data: () => ({
+        overlayAll:false,
         overlay: false,
         currentService: "",
         selects: [],
@@ -243,6 +245,7 @@ export default {
 
         getServiceData(address) {
             var _this = this
+             _this.overlayAll = true
             this.$http.post('/api/v1/service/detail', { // 还可以直接把参数拼接在url后边
                 cluster: _this.clusterid,
                 service: address,
@@ -300,9 +303,11 @@ export default {
                 _this.serviceDetailMap = data
 
                 _this.currentService = address
-
+                _this.overlayAll = false
             }).catch(function (error) {
                 console.log(error);
+                _this.overlayAll = false
+                _this.$message.error("服务信息获取失败或网络不可达到");
             });
         },
 

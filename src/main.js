@@ -13,6 +13,9 @@ import VJsoneditor from 'v-jsoneditor'
 Vue.use(ElementUI);
 
 import axios from './http/http'
+
+
+
 Vue.prototype.$http = axios
 
 import {setCookie,getCookie,delCookie} from './util/cookie'
@@ -23,12 +26,13 @@ var VueCodeMirror = require('vue-codemirror-lite')
 
 Vue.use(VueCodeMirror)
 
-
 Vue.use(VJsoneditor)
 
 Vue.config.productionTip = false
 
 sync(store, router)
+
+
 
 new Vue({
   router,
