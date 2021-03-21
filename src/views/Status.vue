@@ -1,7 +1,7 @@
 <template>
 <div>
     <v-container fluid>
-       <v-overlay :value="overlayAll"></v-overlay>
+        <v-overlay :value="overlayAll"></v-overlay>
         <v-row>
             <v-col class="d-flex">
                 <v-select :items="clusters" item-value="id" item-text="name" label="选择集群" solo v-model="clusterid"></v-select>
@@ -18,8 +18,8 @@
                 <v-card-text> {{cluster.register}} </v-card-text>
                 <v-card-title>在线服务数量 </v-card-title>
                 <v-card-text> {{cluster.services!=null?cluster.services.length:0}} </v-card-text>
-                <v-row style="width: 96%;margin-left: 2%;margin-bottom: 20px">
-                    <v-col v-for="({ actionIcon, actionText, ...attrs }, i) in stats" :key="i" cols="12" md="6" lg="4">
+                <!-- <v-row style="width: 96%;margin-left: 2%;margin-bottom: 20px">
+                    <v-col v-for="({ actionIcon, actionText, ...attrs }, i) in services" :key="i" cols="12" md="6" lg="4">
                         <material-stat-card v-bind="attrs" class="stat-card">
                             <template #actions>
                                 <v-icon class="mr-3" small v-text="actionIcon" />
@@ -34,7 +34,24 @@
                             </template>
                         </material-stat-card>
                     </v-col>
-                </v-row>
+                </v-row> -->
+                <v-card>
+                    <v-card-title>
+                        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+                    </v-card-title>
+                    <v-data-table :headers="headers" :items="services" :search="search">
+                        <template v-slot:item.mode="{ item }">
+                            <v-chip dark>
+                                {{ item.mode }}
+                            </v-chip>
+                        </template>
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon blue @click="showService(item)">
+                                mdi-format-list-bulleted-square
+                            </v-icon>
+                        </template>
+                    </v-data-table>
+                </v-card>
             </v-card>
         </v-row>
     </v-container>
@@ -79,7 +96,7 @@
                     <v-jsoneditor v-model="configVal.data.val" :options="options" :plus="true" height="400px" />
                 </v-col>
                 <v-col cols="12" md="6" lg="8" v-if="showType == 'filter'">
-                     <v-btn depressed color="primary" style="margin-top: 30px;margin-bottom: 10px;" @click="saveChange">
+                    <v-btn depressed color="primary" style="margin-top: 30px;margin-bottom: 10px;" @click="saveChange">
                         微调保存
                     </v-btn>
                     <v-alert type="warning">
@@ -87,7 +104,7 @@
                     </v-alert>
                     <codemirror v-model="filterVal.data.code" :options="{mode: 'lua', extraKeys: {'Ctrl-Space': 'autocomplete'},lineNumbers:true,theme:'mdn-like'}">
                     </codemirror>
-                 
+
                 </v-col>
             </v-row>
         </v-card>
@@ -106,7 +123,31 @@ import {
 
 export default {
     data: () => ({
-        overlayAll:false,
+        search: '',
+        headers: [{
+                text: '序号',
+                align: 'start',
+                filterable: false,
+                value: 'id',
+            },
+            {
+                text: '服务地址',
+                value: 'address'
+            },
+            {
+                text: '服务类型',
+                value: 'mode'
+            },
+            {
+                text: '服务版本',
+                value: 'version'
+            },
+            {
+                text: '操作',
+                value: 'actions'
+            }
+        ],
+        overlayAll: false,
         overlay: false,
         currentService: "",
         selects: [],
@@ -136,7 +177,7 @@ export default {
             mode: "code"
         },
         clusterid: 0,
-        stats: [],
+        services: [],
         service: [],
         serviceDetail: [],
         serviceDetailMap: {},
@@ -181,6 +222,9 @@ export default {
             deep: true,
         },
     },
+    computed: {
+
+    },
     methods: {
         getClusterList() {
             //获取集群列表
@@ -204,34 +248,21 @@ export default {
             this.$http.get('/api/v1/cluster/self/' + _this.clusterid, { // 还可以直接把参数拼接在url后边
             }).then(function (res) {
                 _this.cluster = res.data.data
-                _this.stats = []
+                _this.services = []
                 if (_this.cluster.services != null) {
-                    var services = _this.cluster.services;
-                    var stats = []
-                    for (var i = 0; i < services.length; i++) {
-                        var serviceMode = services[i].metadata.mode
-                        if (serviceMode == "local") {
-                            stats.push({
-                                // actionIcon: 'mdi-local',
-                                actionText: "mconfig-server v1.0",
-                                color: '#FD9A13',
-                                icon: 'mdi-account-lock',
-                                title: serviceMode,
-                                value: services[i].address,
-                            })
-                        }
-                        if (serviceMode == "share") {
-                            stats.push({
-                                // actionIcon: 'mdi-local',
-                                actionText: "mconfig-server v1.0",
-                                color: '#f15b6c',
-                                icon: 'mdi-share',
-                                title: serviceMode,
-                                value: services[i].address,
-                            })
-                        }
+                    var servicesList = _this.cluster.services;
+                    var services = []
+                    for (var i = 0; i < servicesList.length; i++) {
+                        var serviceMode = servicesList[i].metadata.mode
+                        services.push({
+                            id: i + 1,
+                            version: "mconfig-server v1.0",
+                            mode: serviceMode,
+                            address: servicesList[i].address,
+                        })
                     }
-                    _this.stats = stats
+                    console.log("services:", services)
+                    _this.services = services
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -240,12 +271,18 @@ export default {
         showService(service) {
             console.log(service)
             //获取集群列表
-            this.getServiceData(service.value)
+            this.getServiceData(service.address)
+        },
+        filterOnlyCapsText(value, search, item) {
+            return value != null &&
+                search != null &&
+                typeof value === 'string' &&
+                value.toString().toLocaleUpperCase().indexOf(search) !== -1
         },
 
         getServiceData(address) {
             var _this = this
-             _this.overlayAll = true
+            _this.overlayAll = true
             this.$http.post('/api/v1/service/detail', { // 还可以直接把参数拼接在url后边
                 cluster: _this.clusterid,
                 service: address,
