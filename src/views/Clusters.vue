@@ -280,7 +280,7 @@ export default {
             } else {
                 //新建
                 var _this = this
-                this.$http.post('/api/v1/cluster/', { // 还可以直接把参数拼接在url后边
+                this.$http.post('/api/v1/cluster', { // 还可以直接把参数拼接在url后边
                     namespace: _this.editedItem.namespace,
                     register: _this.editedItem.register,
                     desc: _this.editedItem.desc,

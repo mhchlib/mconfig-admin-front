@@ -41,7 +41,10 @@
                     </v-card-title>
                     <v-data-table :headers="headers" :items="services" :search="search">
                         <template v-slot:item.mode="{ item }">
-                            <v-chip dark>
+                            <v-chip dark v-if="item.mode == 'local'">
+                                {{ item.mode }}
+                            </v-chip>
+                            <v-chip  v-else   color="primary">
                                 {{ item.mode }}
                             </v-chip>
                         </template>
@@ -248,6 +251,10 @@ export default {
             this.$http.get('/api/v1/cluster/self/' + _this.clusterid, { // 还可以直接把参数拼接在url后边
             }).then(function (res) {
                 _this.cluster = res.data.data
+                if( _this.cluster == null){
+                    _this.$message.error( res.data.msg);
+                    return
+                }
                 _this.services = []
                 if (_this.cluster.services != null) {
                     var servicesList = _this.cluster.services;

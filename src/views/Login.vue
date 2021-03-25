@@ -12,7 +12,7 @@
           require('@/assets/vmd.svg')" />
                     </div>
                     <div class="text-h4" style="text-align:center">
-                        <strong class="mr-1 font-weight-black">MCONFIG</strong>
+                        <strong class="mr-1 font-weight-black">MCONFIG </strong>
                         <span class="primary--text">ADMIN</span>
                     </div>
                 </div>
