@@ -273,7 +273,7 @@ export default {
             } else {
                 //新建
                 var _this = this
-                this.$http.post('/api/v1/app/', { // 还可以直接把参数拼接在url后边
+                this.$http.post('/api/v1/app', { // 还可以直接把参数拼接在url后边
                     name: this.editedItem.name,
                     desc: this.editedItem.desc,
                     key: this.editedItem.key,

@@ -186,7 +186,10 @@ export default {
         serviceDetailMap: {},
     }),
     mounted() {
-        this.clusterid = parseInt(this.$route.params.cluster)
+        console.log(this.$route.params.cluster)
+        if (this.$route.params.cluster != undefined){
+            this.clusterid = parseInt(this.$route.params.cluster)
+        }
         this.getClusterList()
     },
     watch: {
@@ -246,6 +249,9 @@ export default {
             });
         },
         getClusterData() {
+            if( this.clusterid == undefined){
+                return
+            }
             //获取集群信息
             var _this = this
             this.$http.get('/api/v1/cluster/self/' + _this.clusterid, { // 还可以直接把参数拼接在url后边

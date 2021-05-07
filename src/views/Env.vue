@@ -540,7 +540,7 @@ export default {
             } else {
                 //新建
                 var _this = this
-                this.$http.post('/api/v1/env/', { // 还可以直接把参数拼接在url后边
+                this.$http.post('/api/v1/env', { // 还可以直接把参数拼接在url后边
                     app: parseInt(_this.app_id),
                     name: _this.editedItem.name,
                     desc: _this.editedItem.desc,
